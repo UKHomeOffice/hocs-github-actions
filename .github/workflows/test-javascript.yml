@@ -1,0 +1,57 @@
+name: 'Test'
+on:
+  workflow_call:
+    inputs:
+      components:
+        required: false
+        type: string
+      dependencies:
+        required: false
+        type: string
+      elastic:
+        required: false
+        type: string
+
+jobs:
+  test:
+    name: 'Unit and Integration Tests'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 14.x, 16.x , 18.x]
+      fail-fast: false
+    steps:
+      - name: Install OS dependencies
+        if: ${{ inputs.dependencies != '' }}
+        run: sudo apt-get install ${{ inputs.dependencies }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Start infrastructure
+        if:  ${{ inputs.components != '' }}
+        run: ./ci/infrastructure.sh
+        env:
+          COMPOSE_SERVICES: ${{ inputs.components }}
+          INCLUDE_ELASTIC: ${{ inputs.elastic || 'false' }}
+        shell: bash
+
+      - name: Install npm dependencies
+        run: npm --loglevel warn ci --production=false --no-optional
+
+      - name: Build project
+        run: npm run build-prod
+
+      - name: Lint project
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test

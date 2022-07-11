@@ -1,0 +1,44 @@
+name: 'Test'
+on:
+  workflow_call:
+    inputs:
+      components:
+        required: false
+        type: string
+      dependencies:
+        required: false
+        type: string
+      elastic:
+        required: false
+        type: string
+
+jobs:
+  test:
+    name: 'Unit and Integration Tests'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install OS dependencies
+        if: ${{ inputs.dependencies != '' }}
+        run: sudo apt-get install ${{ inputs.dependencies }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Start infrastructure
+        if:  ${{ inputs.components != '' }}
+        run: ./ci/infrastructure.sh
+        env:
+          COMPOSE_SERVICES: ${{ inputs.components }}
+          INCLUDE_ELASTIC: ${{ inputs.elastic || 'false' }}
+        shell: bash
+
+      - name: Run tests
+        run: ./gradlew clean build --no-daemon

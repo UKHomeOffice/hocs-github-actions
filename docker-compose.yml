@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+
+  postgres:
+    image: postgres:14-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    networks:
+      - hocs-network
+    environment:
+     POSTGRES_USER: root
+     POSTGRES_PASSWORD: dev
+    tmpfs:
+      - /var/lib/postgresql
+
+  localstack:
+    image: localstack/localstack:0.14.3
+    ports:
+      - "4566:4566"
+    networks:
+      hocs-network:
+        aliases:
+          - localhost.localstack.cloud
+    environment:
+      HOSTNAME_EXTERNAL: localstack
+      DEFAULT_REGION: eu-west-2
+      SERVICES: sqs,sns,s3
+      LOCALSTACK_HOSTNAME: "localhost.localstack.cloud"
+      SQS_PROVIDER: "elasticmq"
+    volumes:
+      - ${PWD}/ci/localstack/0-install-dependencies.sh:/docker-entrypoint-initaws.d/0-install-dependencies.sh
+      - ${PWD}/ci/localstack/1-setup-buckets.sh:/docker-entrypoint-initaws.d/1-setup-buckets.sh
+      - ${PWD}/ci/localstack/2-setup-queues.sh:/docker-entrypoint-initaws.d/2-setup-queues.sh
+
+networks:
+  hocs-network:
