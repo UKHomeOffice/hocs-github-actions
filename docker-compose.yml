@@ -10,13 +10,16 @@ services:
     networks:
       - hocs-network
     environment:
-     POSTGRES_USER: root
-     POSTGRES_PASSWORD: dev
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: postgres
+      POSTGRES_HOST: postgres
     tmpfs:
       - /var/lib/postgresql
 
   localstack:
     image: localstack/localstack:0.14.3
+    restart: always
     ports:
       - "4566:4566"
     networks:
@@ -33,6 +36,29 @@ services:
       - ${PWD}/ci/localstack/0-install-dependencies.sh:/docker-entrypoint-initaws.d/0-install-dependencies.sh
       - ${PWD}/ci/localstack/1-setup-buckets.sh:/docker-entrypoint-initaws.d/1-setup-buckets.sh
       - ${PWD}/ci/localstack/2-setup-queues.sh:/docker-entrypoint-initaws.d/2-setup-queues.sh
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:15.1.1
+    restart: always
+    ports:
+      - "9990:9990"
+      - "9081:8080"
+    networks:
+      - hocs-network
+    environment:
+      KEYCLOAK_USER: root
+      KEYCLOAK_PASSWORD: dev
+      KEYCLOAK_IMPORT: /tmp/local-realm.json
+      DB_VENDOR: postgres
+      DB_ADDR: postgres
+      DB_PORT: 5432
+      DB_DATABASE: postgres
+      DB_USER: root
+      DB_PASSWORD: dev
+    volumes:
+      - ${PWD}/ci/keycloak/local-realm.json:/tmp/local-realm.json
+    depends_on:
+      - postgres
 
 networks:
   hocs-network:
