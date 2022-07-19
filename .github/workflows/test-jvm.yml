@@ -42,3 +42,5 @@ jobs:
 
       - name: Run tests
         run: ./gradlew clean build --no-daemon
+        env:
+          PACKAGE_TOKEN: ${{secrets.PACKAGE_TOKEN}}
