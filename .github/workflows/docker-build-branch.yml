@@ -38,4 +38,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            PACKAGE_TOKEN=${{secrets.PACKAGE_TOKEN}}
+            PACKAGE_TOKEN=${{secrets.GITHUB_TOKEN}}
