@@ -15,6 +15,10 @@ done
 awslocal sqs create-queue --queue-name audit-queue-dlq --attributes '{"VisibilityTimeout": "3"}'
 awslocal sqs create-queue --queue-name audit-queue --attributes '{"RedrivePolicy": "{\"deadLetterTargetArn\": \"arn:aws:sqs:eu-west-2:000000000000:audit-queue-dlq\", \"maxReceiveCount\":1}", "VisibilityTimeout": "10"}'
 
+## Extract
+awslocal sqs create-queue --queue-name extracts-queue-dlq --attributes '{"VisibilityTimeout": "3"}'
+awslocal sqs create-queue --queue-name extracts-queue --attributes '{"RedrivePolicy": "{\"deadLetterTargetArn\": \"arn:aws:sqs:eu-west-2:000000000000:extracts-queue-dlq\", \"maxReceiveCount\":1}", "VisibilityTimeout": "10"}'
+
 ## Search
 awslocal sqs create-queue --queue-name search-queue-dlq --attributes '{"VisibilityTimeout": "3"}'
 awslocal sqs create-queue --queue-name search-queue --attributes '{"RedrivePolicy": "{\"deadLetterTargetArn\":\"arn:aws:sqs:eu-west-2:000000000000:search-queue-dlq\", \"maxReceiveCount\":1}", "VisibilityTimeout": "10"}'
