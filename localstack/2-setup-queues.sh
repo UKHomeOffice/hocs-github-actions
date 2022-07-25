@@ -43,8 +43,10 @@ awslocal sqs list-queues
 
 ## SNS Subscriptions
 awslocal sns create-topic --name hocs-audit-topic
+awslocal sns subscribe --topic-arn arn:aws:sns:eu-west-2:000000000000:hocs-audit-topic --attributes RawMessageDelivery=true --protocol sqs --notification-endpoint arn:aws:sns:eu-west-2:000000000000:extracts-queue
 awslocal sns subscribe --topic-arn arn:aws:sns:eu-west-2:000000000000:hocs-audit-topic --attributes RawMessageDelivery=true --protocol sqs --notification-endpoint arn:aws:sns:eu-west-2:000000000000:audit-queue
 awslocal sns subscribe --topic-arn arn:aws:sns:eu-west-2:000000000000:hocs-audit-topic --attributes RawMessageDelivery=true --protocol sqs --notification-endpoint arn:aws:sns:eu-west-2:000000000000:search-queue
 awslocal sns set-subscription-attributes --subscription-arn $(aws --endpoint-url=http://localstack:4566 sns list-subscriptions-by-topic --topic-arn arn:aws:sns:eu-west-2:000000000000:hocs-audit-topic --output json | jq --raw-output '.Subscriptions[0].SubscriptionArn') --attribute-name RawMessageDelivery --attribute-value true
 awslocal sns set-subscription-attributes --subscription-arn $(aws --endpoint-url=http://localstack:4566 sns list-subscriptions-by-topic --topic-arn arn:aws:sns:eu-west-2:000000000000:hocs-audit-topic --output json | jq --raw-output '.Subscriptions[1].SubscriptionArn') --attribute-name RawMessageDelivery --attribute-value true
+awslocal sns set-subscription-attributes --subscription-arn $(aws --endpoint-url=http://localstack:4566 sns list-subscriptions-by-topic --topic-arn arn:aws:sns:eu-west-2:000000000000:hocs-audit-topic --output json | jq --raw-output '.Subscriptions[2].SubscriptionArn') --attribute-name RawMessageDelivery --attribute-value true
 awslocal sns list-subscriptions
