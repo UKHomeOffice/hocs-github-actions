@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3'
 
 services:
 
@@ -10,3 +10,7 @@ services:
       - ${PWD}/ci/localstack/3-setup-elastic.sh:/docker-entrypoint-initaws.d/3-setup-elastic.sh
       - ${PWD}/ci/localstack/4-setup_index.sh:/docker-entrypoint-initaws.d/4-setup_index.sh
       - ${PWD}/ci/localstack/elastic_mapping.json:/docker-entrypoint-initaws.d/elastic_mapping.json
+
+  casework:
+    depends_on:
+      - search
