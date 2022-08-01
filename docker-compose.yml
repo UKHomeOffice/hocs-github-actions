@@ -402,6 +402,17 @@ services:
     depends_on:
       - localstack
 
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    restart: on-failure
+    ports:
+      - "5434:1433"
+    networks:
+      - hocs-network  
+    environment:
+      SA_PASSWORD: Development01
+      ACCEPT_EULA: Y
+
   templates:
     image: quay.io/ukhomeofficedigital/hocs-templates:${TEMPLATES_TAG:-latest}
     restart: on-failure
