@@ -4,6 +4,9 @@
 This is the HOCS CI infrastructure.
 This is a repo referenced by other repos to provide centrally configured, consistent and reusable CI pipeline components. 
 
+As a side effect it makes a docker-compose available to projects that is consistent between CI and local dev.
+View the readme in [hocs repo](https://github.com/UKHomeOffice/hocs/blob/main/README.md)  for more details.
+
 ## Getting Started
 
 Reference the repo workflow in `uses` definition on the calling project.
