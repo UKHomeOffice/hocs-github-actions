@@ -32,6 +32,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: wrapper
+
       - name: Start infrastructure
         if:  ${{ inputs.components != '' }}
         run: ./ci/infrastructure.sh
@@ -41,6 +46,6 @@ jobs:
         shell: bash
 
       - name: Run tests
-        run: ./gradlew clean build --no-daemon
+        run: gradle clean build --no-daemon
         env:
           PACKAGE_TOKEN: ${{secrets.GITHUB_TOKEN}}
