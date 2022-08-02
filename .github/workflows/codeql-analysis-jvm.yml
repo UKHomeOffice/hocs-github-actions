@@ -26,8 +26,13 @@ jobs:
         with:
           languages: 'java'
 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: wrapper
+
       - name: Build
-        run: ./gradlew clean assemble --no-daemon
+        run: gradle clean assemble --no-daemon
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
