@@ -2,6 +2,10 @@ version: '3'
 
 services:
 
+  casework:
+    depends_on:
+      - search
+
   localstack:
     environment:
       SERVICES: sqs,sns,es,s3
@@ -11,6 +15,23 @@ services:
       - ${PWD}/ci/localstack/4-setup_index.sh:/docker-entrypoint-initaws.d/4-setup_index.sh
       - ${PWD}/ci/localstack/elastic_mapping.json:/docker-entrypoint-initaws.d/elastic_mapping.json
 
-  casework:
+  search:
+    image: quay.io/ukhomeofficedigital/hocs-search:${SEARCH_TAG:-latest}
+    restart: on-failure
+    ports:
+      - "8088:8080"
+    networks:
+      - hocs-network
+    environment:
+      JAVA_OPTS: "-Xms32m -Xmx128m"
+      SPRING_PROFILES_ACTIVE: "development,localstack"
+      SERVER_PORT: 8080
+      DB_HOST: "postgres"
+      AWS_LOCAL_HOST: "localstack"
+      LOCALSTACK_HOST: "localstack"
+    healthcheck:
+      test: "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"
+      timeout: 5s
+      retries: 40
     depends_on:
-      - search
+      - localstack
