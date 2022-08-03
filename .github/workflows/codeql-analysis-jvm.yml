@@ -26,13 +26,13 @@ jobs:
         with:
           languages: 'java'
 
-      - name: Setup Gradle
+      - name: Run tests
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: wrapper
-
-      - name: Build
-        run: gradle clean assemble --no-daemon
+          arguments: clean assemble --no-daemon
+        env:
+          PACKAGE_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
