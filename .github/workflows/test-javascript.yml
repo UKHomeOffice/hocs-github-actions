@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Install OS dependencies
         if: ${{ inputs.dependencies != '' }}
-        run: sudo apt-get install ${{ inputs.dependencies }}
+        run: sudo apt-get update && sudo apt-get install ${{ inputs.dependencies }} --no-install-recommends  --no-install-suggests -y
 
       - name: Checkout repository
         uses: actions/checkout@v3
