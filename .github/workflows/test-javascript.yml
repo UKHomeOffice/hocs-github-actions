@@ -55,3 +55,11 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Publish test report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Test results
+          path: reports/jest-*.xml
+          reporter: jest-junit
