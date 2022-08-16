@@ -13,8 +13,8 @@ on:
         type: string
       node-version-matrix:
         required: false
-        array: string
-        default: [ 14.x, 16.x , 18.x ]
+        type: string
+        default: '[ 14.x, 16.x , 18.x ]'
 
 jobs:
   test:
@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ${{ node-version-matrix }}
+        node-version: ${{ Array.from(node-version-matrix) }}
       fail-fast: false
     steps:
       - name: Install OS dependencies
