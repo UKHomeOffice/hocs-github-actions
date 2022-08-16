@@ -14,7 +14,7 @@ on:
       node-version-matrix:
         required: false
         type: string
-        default: [ 14.x, 16.x , 18.x]
+        default: [ 14.x, 16.x , 18.x ]
 
 jobs:
   test:
