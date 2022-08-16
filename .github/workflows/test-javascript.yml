@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ${{ Array.from(node-version-matrix) }}
+        node-version: ${{ inputs.node-version-matrix }}
       fail-fast: false
     steps:
       - name: Install OS dependencies
