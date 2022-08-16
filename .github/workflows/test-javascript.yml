@@ -13,8 +13,8 @@ on:
         type: string
       node-version-matrix:
         required: false
-        type: string
-        default: '[ 14.x, 16.x , 18.x ]'
+        array: string
+        default: [ 14.x, 16.x , 18.x ]
 
 jobs:
   test:
