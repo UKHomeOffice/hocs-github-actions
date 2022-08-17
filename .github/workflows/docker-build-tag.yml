@@ -6,6 +6,10 @@ on:
         required: true
         type: string
 
+concurrency:
+  group: '${{ github.workflow }}'
+  cancel-in-progress: false
+
 jobs:
   publish:
     name: 'Main Publish'

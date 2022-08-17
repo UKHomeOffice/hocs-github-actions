@@ -16,6 +16,10 @@ on:
         type: string
         default: '[ "14.x", "16.x" , "18.x" ]'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: 'Unit and Integration Tests'
