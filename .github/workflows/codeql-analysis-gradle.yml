@@ -1,6 +1,10 @@
-name: 'CodeQL - Java'
+name: 'CodeQL - Gradle'
 on:
   workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   analyze:
@@ -20,19 +24,17 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: gradle
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
           languages: 'java'
 
-      - name: Run tests
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: wrapper
-          arguments: clean assemble --no-daemon
+      - name: Build jar
+        run: ./gradlew clean assemble --no-daemon
         env:
           PACKAGE_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Perform CodeQL Analysis
+      - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v2
