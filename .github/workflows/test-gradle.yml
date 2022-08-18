@@ -1,4 +1,4 @@
-name: 'Test'
+name: 'Test - Gradle'
 on:
   workflow_call:
     inputs:
@@ -11,19 +11,16 @@ on:
       elastic:
         required: false
         type: string
-      node-version-matrix:
-        required: false
-        type: string
-        default: '[ "14.x", "16.x" , "18.x" ]'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
     name: 'Unit and Integration Tests'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: ${{ fromJson(inputs.node-version-matrix) }}
-      fail-fast: false
+
     steps:
       - name: Install OS dependencies
         if: ${{ inputs.dependencies != '' }}
@@ -34,11 +31,12 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          distribution: 'temurin'
+          java-version: '17'
+          cache: gradle
 
       - name: Start infrastructure
         if:  ${{ inputs.components != '' }}
@@ -48,14 +46,7 @@ jobs:
           INCLUDE_ELASTIC: ${{ inputs.elastic || 'false' }}
         shell: bash
 
-      - name: Install npm dependencies
-        run: npm --loglevel warn ci --production=false --no-optional
-
-      - name: Build project
-        run: npm run build-prod
-
-      - name: Lint project
-        run: npm run lint
-
-      - name: Run tests
-        run: npm test
+      - name: Build jar
+        run: ./gradlew clean test --no-daemon
+        env:
+          PACKAGE_TOKEN: ${{secrets.GITHUB_TOKEN}}
