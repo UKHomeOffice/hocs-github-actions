@@ -2,14 +2,20 @@ name: 'Semver Tag'
 on:
   pull_request:
     types: [ closed ]
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
-  publish:
-    name: 'Main Publish'
-    runs-on: ubuntu-latest
+  tag:
+    name: 'Main Tag'
     if: |
       github.event.pull_request.merged == true &&
       contains(github.event.pull_request.labels.*.name, 'skip-release') == false
+    runs-on: ubuntu-latest
+
     steps:
       - name: Parse the SemVer label
         id: label
@@ -32,3 +38,13 @@ jobs:
           tag: ${{ steps.calculate.outputs.version }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           move_major_tag: true
+
+      - name: Post failure to Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.21.0
+        if: ${{ failure() }}
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack-message: "GitHub Action failure: ${{github.repository}}\nRun: ${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}\nOriginating PR: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

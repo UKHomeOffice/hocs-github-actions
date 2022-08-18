@@ -1,4 +1,4 @@
-name: 'Docker Build Tag - Gradle'
+name: 'Docker Build Tag - npm'
 on:
   workflow_call:
     inputs:
