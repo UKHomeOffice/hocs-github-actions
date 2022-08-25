@@ -129,6 +129,41 @@ jobs:
     secrets: inherit
 ```
 
+## maven-publish-branch-gradle.yml
+A job to publish an artifact that needs building with gradle and tag it with the pull request head SHA.
+To save repository spam this will only trigger if a label is added to the PR with the value of `smoketest`.
+
+### Example usage
+```yaml
+name: 'Maven Publish Branch'
+on:
+  pull_request:
+    types: [ labeled, opened, reopened, synchronize ]
+
+jobs:
+  build:
+    uses: UKHomeOffice/hocs-ci-infrastructure/.github/workflows/maven-publish-branch-gradle.yml@v2
+    secrets: inherit
+```
+
+## maven-publish-tag-gradle.yml
+A job to publish an artifact that needs building with gradle and tag it with a SemVer value incremented by a label (`major`, `minor`, `patch`) on the PR.
+It will also tag the commit SHA with the same SemVer Tag.
+To save repository spam this will not trigger if a label is added to the PR with the value of `skip-release`.
+
+### Example usage
+```yaml
+name: 'Maven Publish Tag'
+on:
+  pull_request:
+    types: [ closed ]
+
+jobs:
+  build:
+    uses: UKHomeOffice/hocs-ci-infrastructure/.github/workflows/maven-publish-tag-gradle.yml@v2
+    secrets: inherit
+```
+
 ## pr-check.yml
 This action is used to ensure one of the required labels is set on a PR in order for jobs that run after the PR is merged not to fail.
 It is hardcoded to ensure one of `minor`,`major`,`patch`,`skip-release` is present.
