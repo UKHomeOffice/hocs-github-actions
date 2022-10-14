@@ -3,6 +3,10 @@ on:
   pull_request:
     types: [ closed ]
   workflow_call:
+    inputs:
+      moveMajor:
+        required: false
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}
@@ -37,7 +41,7 @@ jobs:
         with:
           tag: ${{ steps.calculate.outputs.version }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          move_major_tag: true
+          move_major_tag: ${{ inputs.moveMajor || 'true' }}
 
       - name: Post failure to Slack channel
         id: slack
