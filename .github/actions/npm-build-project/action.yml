@@ -1,0 +1,28 @@
+name: 'npm Build Project'
+description: 'This action configures node and builds a project using npm'
+inputs:
+  node_version:
+    required: false
+    description: 'The GitHub token'
+    default: '16'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node_version }}
+        cache: 'npm'
+
+    - name: Install npm dependencies
+      run: npm --loglevel warn ci --production=false --no-optional
+      shell: bash
+
+    - name: Build project
+      run: npm run build-prod
+      shell: bash
+
+    - name: Lint project
+      run: npm run lint
+      shell: bash

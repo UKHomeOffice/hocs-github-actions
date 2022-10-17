@@ -200,7 +200,7 @@ jobs:
 
 ## test-npm.yml
 This action will run `npm run lint` and `npm test` on a repository after building it with `npm ci`.
-It will run tests in parallel against 3 versions of node; `14`, `16`, `18`.
+It will run tests in parallel against 2 versions of node; `16`, `18`.
 Optionally this action will install dependencies required to run tests.
 Optionally this action will start components from the docker-compose to run end to end tests against.
 

@@ -1,0 +1,31 @@
+name: 'Start Integration Infrastructure'
+description: 'This action installs required dependencies and starts the infrastructure required for integration testing'
+inputs:
+  dependencies:
+    required: false
+    description: "Software dependencies to install e.g. libreoffice"
+    default: ''
+  components:
+    required: false
+    description: 'List of components to start uo e.g. hocs-casework, postgres'
+    default: ''
+  include_elastic:
+    required: false
+    description: 'Whether to start elasticsearch as part of localstack
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install OS dependencies
+      if: ${{ inputs.dependencies != '' }}
+      run: sudo apt-get update && sudo apt-get install ${{ inputs.dependencies }} --no-install-recommends  --no-install-suggests -y
+      shell: bash
+
+    - name: Start infrastructure
+      if:  ${{ inputs.components != '' }}
+      run: ./ci/infrastructure.sh
+      shell: bash
+      env:
+        COMPOSE_SERVICES: ${{ inputs.components }}
+        INCLUDE_ELASTIC: ${{ inputs.include_elastic }}
