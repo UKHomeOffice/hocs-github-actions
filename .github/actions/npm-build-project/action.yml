@@ -3,8 +3,8 @@ description: 'This action configures node and builds a project using npm'
 inputs:
   node_version:
     required: false
-    description: 'The GitHub token'
-    default: '16'
+    description: 'The required node version'
+    default: '18'
 
 runs:
   using: 'composite'
