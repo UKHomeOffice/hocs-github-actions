@@ -14,7 +14,7 @@ on:
       node-version-matrix:
         required: false
         type: string
-        default: '[ "16.x" , "18.x" ]'
+        default: '[ "16.x" , "18.x", "19.x" ]'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
