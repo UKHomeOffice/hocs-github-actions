@@ -5,6 +5,10 @@ on:
       images:
         required: true
         type: string
+      node-version:
+        required: false
+        type: string
+        default: 16
 
 concurrency:
   group: ${{ github.workflow }}
@@ -63,7 +67,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: ${{ inputs.node-version }}
           cache: 'npm'
 
       - name: Install npm dependencies
