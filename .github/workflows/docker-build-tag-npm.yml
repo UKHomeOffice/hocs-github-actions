@@ -5,6 +5,10 @@ on:
       image:
         required: true
         type: string
+      node-version:
+        required: false
+        type: string
+        default: 16
 
 concurrency:
   group: ${{ github.workflow }}
