@@ -22,31 +22,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install OS dependencies
-        if: ${{ inputs.dependencies != '' }}
-        run: sudo apt-get update && sudo apt-get install ${{ inputs.dependencies }} --no-install-recommends  --no-install-suggests -y
-
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           submodules: true
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
+      - name: Build project
+        uses: UKHomeOffice/hocs-github-actions/.github/actions/gradle-build-project@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: gradle
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Start infrastructure
-        if:  ${{ inputs.components != '' }}
-        run: ./ci/infrastructure.sh
-        env:
-          COMPOSE_SERVICES: ${{ inputs.components }}
-          INCLUDE_ELASTIC: ${{ inputs.elastic || 'false' }}
-        shell: bash
+      - name: Start integration infrastructure
+        uses: UKHomeOffice/hocs-github-actions/.github/actions/start-integration-infrastructure@v3
+        with:
+          dependencies: ${{ inputs.dependencies }}
+          components: ${{ inputs.components }}
+          include_elastic: ${{ inputs.elastic }}
 
-      - name: Build jar
-        run: ./gradlew clean test --no-daemon
-        env:
-          PACKAGE_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Run tests
+        run: ./gradlew test --no-daemon

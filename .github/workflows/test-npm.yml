@@ -14,7 +14,7 @@ on:
       node-version-matrix:
         required: false
         type: string
-        default: '[ "16.x" , "18.x", "19.x" ]'
+        default: '[ "18.x", "19.x" ]'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,41 +26,26 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ${{ fromJson(inputs.node-version-matrix) }}
+        node_version: ${{ fromJson(inputs.node-version-matrix) }}
       fail-fast: false
 
     steps:
-      - name: Install OS dependencies
-        if: ${{ inputs.dependencies != '' }}
-        run: sudo apt-get update && sudo apt-get install ${{ inputs.dependencies }} --no-install-recommends  --no-install-suggests -y
-
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           submodules: true
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-
-      - name: Start infrastructure
-        if:  ${{ inputs.components != '' }}
-        run: ./ci/infrastructure.sh
-        env:
-          COMPOSE_SERVICES: ${{ inputs.components }}
-          INCLUDE_ELASTIC: ${{ inputs.elastic || 'false' }}
-        shell: bash
-
-      - name: Install npm dependencies
-        run: npm --loglevel warn ci --production=false --no-optional
-
       - name: Build project
-        run: npm run build-prod
+        uses: UKHomeOffice/hocs-github-actions/.github/actions/npm-build-project@v3
+        with:
+          node_version: ${{ matrix.node_version }}
 
-      - name: Lint project
-        run: npm run lint
+      - name: Start integration infrastructure
+        uses: UKHomeOffice/hocs-github-actions/.github/actions/start-integration-infrastructure@v3
+        with:
+          dependencies: ${{ inputs.dependencies }}
+          components: ${{ inputs.components }}
+          include_elastic: ${{ inputs.elastic }}
 
       - name: Run tests
         run: npm test
